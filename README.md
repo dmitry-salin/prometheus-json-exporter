@@ -77,8 +77,7 @@ An example configuration for multiple endpoints, with headers:
 ```
 - endpoint: http://example.com/endpoint-1
   headers:
-  - Content-Type: application/json
-  - API-KEY: asdf
+  - Accept: application/json
   mappings:
   - name: example_global
     path: $.example

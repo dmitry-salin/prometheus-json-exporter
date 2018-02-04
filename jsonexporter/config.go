@@ -7,18 +7,18 @@ import (
 )
 
 type ModuleConfig struct {
-    Endpoint string            `yaml:"endpoint"`
-    Headers  map[string]string `yaml:"headers"`
-    Mappings []*Mapping        `yaml:"mappings"`
+	Endpoint string            `yaml:"endpoint"`
+	Headers  map[string]string `yaml:"headers"`
+	Mappings []*Mapping        `yaml:"mappings"`
 }
 
 type Mapping struct {
-	Name   string              `yaml:name`
-	Path   string              `yaml:path`
-	Labels map[string]string   `yaml:labels`
-	Type   string              `yaml:type`
-	Help   string              `yaml:help`
-	Values map[string]string   `yaml:values`
+	Name   string            `yaml:"name"`
+	Path   string            `yaml:"path"`
+	Labels map[string]string `yaml:"labels"`
+	Type   string            `yaml:"type"`
+	Help   string            `yaml:"help"`
+	Values map[string]string `yaml:"values"`
 }
 
 func (mapping *Mapping) labelNames() []string {

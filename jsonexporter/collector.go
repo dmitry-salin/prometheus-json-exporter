@@ -52,7 +52,7 @@ func NewCollector(modules []*Module) *Collector {
 func (module *Module) fetchJson() ([]byte, error) {
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", module.endpoint, nil)
-	for name, value := range module.headers{
+	for name, value := range module.headers {
 		req.Header.Add(name, value)
 	}
 
@@ -71,18 +71,18 @@ func (module *Module) fetchJson() ([]byte, error) {
 }
 
 func (col *Collector) Collect(reg *harness.MetricRegistry) {
-    for _, module := range col.modules {
-        json, err := module.fetchJson()
-        if err != nil {
-            log.Error(err)
-            return
-        }
+	for _, module := range col.modules {
+		json, err := module.fetchJson()
+		if err != nil {
+			log.Error(err)
+			return
+		}
 
-        for _, scraper := range module.scrapers {
-            if err := scraper.Scrape(json, reg); err != nil {
-                log.Errorf("error while scraping json;err:<%s>", err)
-                continue
-            }
-        }
-    }
+		for _, scraper := range module.scrapers {
+			if err := scraper.Scrape(json, reg); err != nil {
+				log.Errorf("error while scraping json;err:<%s>", err)
+				continue
+			}
+		}
+	}
 }

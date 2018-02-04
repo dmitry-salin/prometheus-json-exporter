@@ -2,15 +2,15 @@ package jsonexporter
 
 import (
 	"fmt"
-	"github.com/urfave/cli"
 	"github.com/kawamuray/prometheus-exporter-harness/harness"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/urfave/cli"
 )
 
 type Module struct {
-	endpoint  string
-	headers   map[string]string
-	scrapers  []JsonScraper
+	endpoint string
+	headers  map[string]string
+	scrapers []JsonScraper
 }
 
 type ScrapeType struct {
@@ -69,7 +69,7 @@ func Init(c *cli.Context, reg *harness.MetricRegistry) (harness.Collector, error
 
 	modules := make([]*Module, len(moduleConfigs))
 	for i, moduleConfig := range moduleConfigs {
-        modules[i] = &Module{endpoint: moduleConfig.Endpoint, headers: moduleConfig.Headers}
+		modules[i] = &Module{endpoint: moduleConfig.Endpoint, headers: moduleConfig.Headers}
 		modules[i].scrapers = make([]JsonScraper, len(moduleConfig.Mappings))
 		for j, mapping := range moduleConfig.Mappings {
 			tpe := ScrapeTypes[mapping.Type]
