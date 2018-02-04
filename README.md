@@ -77,13 +77,13 @@ An example configuration for multiple endpoints, with headers:
 ```
 - endpoint: http://example.com/endpoint-1
   headers:
-  - Accept: application/json
+    Accept: application/json
   mappings:
   - name: example_global
     path: $.example
 - endpoint: http://example.com/endpoint-2
   headers:
-  - API-KEY: foobar
+    API-KEY: foobar
   mappings:
   - name: example_value
     type: object
