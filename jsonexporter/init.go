@@ -14,15 +14,16 @@ type Module struct {
 }
 
 type ScrapeType struct {
-	Configure  func(*Mapping, *harness.MetricRegistry)
+	Configure  func(*Mapping, *harness.MetricRegistry, map[string]bool)
 	NewScraper func(*Mapping) (JsonScraper, error)
 }
 
 var ScrapeTypes = map[string]*ScrapeType{
 	"object": {
-		Configure: func(mapping *Mapping, reg *harness.MetricRegistry) {
-			for subName := range mapping.Values {
+		Configure: func(mapping *Mapping, reg *harness.MetricRegistry, fqnMap map[string]bool) {
+      for subName := range mapping.Values {
 				name := harness.MakeMetricName(mapping.Name, subName)
+        if !fqnMap[name] {
 				reg.Register(
 					name,
 					prometheus.NewGaugeVec(prometheus.GaugeOpts{
@@ -30,12 +31,15 @@ var ScrapeTypes = map[string]*ScrapeType{
 						Help: mapping.Help + " - " + subName,
 					}, mapping.labelNames()),
 				)
+        fqnMap[name] = true
+        }
 			}
 		},
 		NewScraper: NewObjectScraper,
 	},
 	"value": {
-		Configure: func(mapping *Mapping, reg *harness.MetricRegistry) {
+		Configure: func(mapping *Mapping, reg *harness.MetricRegistry, fqnMap map[string]bool) {
+      if !fqnMap[mapping.Name] {
 			reg.Register(
 				mapping.Name,
 				prometheus.NewGaugeVec(prometheus.GaugeOpts{
@@ -43,6 +47,8 @@ var ScrapeTypes = map[string]*ScrapeType{
 					Help: mapping.Help,
 				}, mapping.labelNames()),
 			)
+      fqnMap[mapping.Name] = true
+      }
 		},
 		NewScraper: NewValueScraper,
 	},
@@ -68,6 +74,7 @@ func Init(c *cli.Context, reg *harness.MetricRegistry) (harness.Collector, error
 	}
 
 	modules := make([]*Module, len(moduleConfigs))
+  fqnMap := make(map[string]bool)
 	for i, moduleConfig := range moduleConfigs {
 		modules[i] = &Module{endpoint: moduleConfig.Endpoint, headers: moduleConfig.Headers}
 		modules[i].scrapers = make([]JsonScraper, len(moduleConfig.Mappings))
@@ -76,7 +83,7 @@ func Init(c *cli.Context, reg *harness.MetricRegistry) (harness.Collector, error
 			if tpe == nil {
 				return nil, fmt.Errorf("unknown scrape type;type:<%s>", mapping.Type)
 			}
-			tpe.Configure(mapping, reg)
+			tpe.Configure(mapping, reg, fqnMap)
 			scraper, err := tpe.NewScraper(mapping)
 			if err != nil {
 				return nil, fmt.Errorf("failed to create scraper;name:<%s>,err:<%s>", mapping.Name, err)
