@@ -2,11 +2,12 @@ package jsonexporter
 
 import (
 	"fmt"
+	"io/ioutil"
+	"net/http"
+
 	log "github.com/Sirupsen/logrus"
 	"github.com/kawamuray/jsonpath" // Originally: "github.com/NickSardo/jsonpath"
 	"github.com/kawamuray/prometheus-exporter-harness/harness"
-	"io/ioutil"
-	"net/http"
 )
 
 type Collector struct {
@@ -75,7 +76,7 @@ func (col *Collector) Collect(reg *harness.MetricRegistry) {
 		json, err := module.fetchJson()
 		if err != nil {
 			log.Error(err)
-			return
+			continue
 		}
 
 		for _, scraper := range module.scrapers {
